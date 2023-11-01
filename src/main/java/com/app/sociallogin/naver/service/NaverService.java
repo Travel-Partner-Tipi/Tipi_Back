@@ -1,5 +1,8 @@
 package com.app.sociallogin.naver.service;
 
+import com.app.entitiy.User;
+import com.app.repository.UserRepository;
+import com.app.sociallogin.kakao.dto.KakaoDTO;
 import com.app.sociallogin.naver.dto.NaverDTO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -13,9 +16,14 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.app.repository.UserRepository;
 @Service
 public class NaverService {
+    private final UserRepository userRepository;
 
+    public NaverService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
     @Value("${naver.client.id}")
     private String NAVER_CLIENT_ID;
 
@@ -104,5 +112,33 @@ public class NaverService {
                     .email(email)
                     .name(name).build();
     }
-    
+    public boolean saveUserInfo(NaverDTO naverDTO) {
+        try {
+            User user = userRepository.findByUserid(naverDTO.getEmail());
+
+            if (user == null) {
+                user = new User();
+                user.setUserid(naverDTO.getEmail());
+                user.setName(naverDTO.getName());
+
+                userRepository.save(user);
+
+                System.out.println("User saved successfully: " + user);
+                return true; // 최초 로그인인 경우 true를 반환
+            }
+            System.out.println("이미 가입된 사용자");
+            return false; // 이미 가입된 사용자인 경우 false를 반환
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false; // 예외가 발생한 경우 false를 반환
+        }
+    }
+    public void saveAdditionalInfo(String email, String info1, String info2) {
+        User user = userRepository.findByUserid(email);
+        user.update(info1, info2);
+        userRepository.save(user);
+    }
+
+
+
 }
