@@ -37,6 +37,7 @@ public class NaverController {
             }
             return ResponseEntity.ok()
                     .body(new MsgEntity("Success", naverInfo));
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500)
