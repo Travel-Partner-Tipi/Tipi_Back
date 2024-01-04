@@ -141,7 +141,12 @@ public class NaverService {
         user.update(info1, info2);
         userRepository.save(user);
     }
+    public void saveNicknameInfo(String email,String nickname,String picture) {
 
+        User user = userRepository.findByUserid(email);
+        user.NicknameUpdate(nickname,picture);
+        userRepository.save(user);
+    }
 
 
 }
