@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -28,11 +29,13 @@ public class NaverController {
             // 여기서 DB에 저장
             boolean isFirstTimeUser = naverService.saveUserInfo(naverInfo);
             session.setAttribute("email", naverInfo.getEmail());
+            Cookie cookie = new Cookie("accesstoken",naverInfo.getAccess());
+            response.addCookie(cookie);
             if (isFirstTimeUser) {
-                response.sendRedirect("/info");
+                response.sendRedirect("/signup1");
                 System.out.println("처음 사용자");
             } else {
-                response.sendRedirect("/info");
+                response.sendRedirect("/signup1");
                 System.out.println("등록된 사용자");
             }
             return ResponseEntity.ok()
