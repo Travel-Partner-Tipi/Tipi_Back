@@ -63,9 +63,13 @@ public class User {
    public void setFollower(Integer follower) {
        this.follower = follower;
    }
-   public void update(String userpw, String picture) {
-       this.userpw = userpw;
-       this.picture = picture;
+   public void update(String info1, String info2) {
+       this.info1 = info1;
+       this.info2 = info2;
     }
-   
+
+   public void NicknameUpdate(String nickname,String picture) {
+        this.nickname=nickname;
+        this.picture=picture;
+   }
 }
