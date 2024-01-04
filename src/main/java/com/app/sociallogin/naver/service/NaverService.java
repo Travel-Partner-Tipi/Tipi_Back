@@ -7,16 +7,17 @@ import com.app.sociallogin.naver.dto.NaverDTO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import com.app.repository.UserRepository;
+
+import java.awt.*;
+import java.util.Map;
+
 @Service
 public class NaverService {
     private final UserRepository userRepository;
@@ -98,6 +99,7 @@ public class NaverService {
                 String.class
         );
 
+
         //Response 데이터 파싱
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonObj    = (JSONObject) jsonParser.parse(response.getBody());
@@ -108,9 +110,10 @@ public class NaverService {
         String name = String.valueOf(account.get("name"));
 
         return NaverDTO.builder()
-                    .id(id)
-                    .email(email)
-                    .name(name).build();
+                .access(accessToken)
+                .id(id)
+                .email(email)
+                .name(name).build();
     }
     public boolean saveUserInfo(NaverDTO naverDTO) {
         try {
