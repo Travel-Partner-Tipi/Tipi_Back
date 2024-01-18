@@ -5,6 +5,7 @@ import com.app.sociallogin.common.MsgEntity;
 import com.app.sociallogin.kakao.dto.KakaoDTO;
 import com.app.sociallogin.naver.dto.NaverDTO;
 import com.app.sociallogin.naver.service.NaverService;
+import com.app.sociallogin.naver.util.CookieUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,8 @@ public class NaverController {
 
     private final NaverService naverService;
 
+
+
     @GetMapping("/callback")
     public ResponseEntity<MsgEntity> callback(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         try {
@@ -29,8 +32,8 @@ public class NaverController {
             // 여기서 DB에 저장
             boolean isFirstTimeUser = naverService.saveUserInfo(naverInfo);
             session.setAttribute("email", naverInfo.getEmail());
-            Cookie cookie = new Cookie("accesstoken",naverInfo.getAccess());
-            response.addCookie(cookie);
+            CookieUtil.addCookie(response,"accesstoken",naverInfo.getAccess(),10);
+            CookieUtil.addCookie(response,"refreshtoken",naverInfo.getAccess(),30);
             if (isFirstTimeUser) {
                 response.sendRedirect("/signup1");
                 System.out.println("처음 사용자");
