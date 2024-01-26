@@ -1,13 +1,13 @@
 package com.app.sociallogin.naver.service;
 
-import com.app.entitiy.RefreshToken;
+import com.app.entitiy.RfToken;
 import com.app.entitiy.User;
 import com.app.repository.RefreshTokenRepository;
 import com.app.repository.UserRepository;
-import com.app.sociallogin.kakao.dto.KakaoDTO;
 //import com.app.sociallogin.naver.config.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.app.sociallogin.naver.dto.NaverDTO;
 import com.app.sociallogin.naver.util.CookieUtil;
+import groovy.util.logging.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.junit.runner.Request;
@@ -18,22 +18,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.app.repository.UserRepository;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import java.awt.*;
 import java.time.Duration;
 import java.util.Map;
 
+
 @Service
 public class NaverService {
+    @Autowired
     private final UserRepository userRepository;
-
+    private static Logger logger = LoggerFactory.getLogger(NaverService.class);
     public NaverService(UserRepository userRepository) {
         this.userRepository = userRepository;
+
     }
     @Value("${naver.client.id}")
     private String NAVER_CLIENT_ID;
@@ -103,9 +108,9 @@ public class NaverService {
         return getUserInfoWithToken(accessToken,refreshToken);
     }
     private void saveRefreshToken(String userId, String newRefreshToken){
-        RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId)
+        RfToken refreshToken = refreshTokenRepository.findByUserId(userId)
                 .map(entity -> entity.update(newRefreshToken))
-                .orElse(new RefreshToken(userId, newRefreshToken));
+                .orElse(new RfToken(userId, newRefreshToken));
 //        RefreshToken refreshToken = new RefreshToken(userId,newRefreshToken);
         refreshTokenRepository.save(refreshToken);
 
@@ -166,6 +171,7 @@ public class NaverService {
                 user = new User();
                 user.setUserid(naverDTO.getEmail());
                 user.setName(naverDTO.getName());
+                user.setAccess(naverDTO.getAccess());
 
                 userRepository.save(user);
 

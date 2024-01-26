@@ -1,9 +1,11 @@
 package com.app.sociallogin;
 
 import com.app.sociallogin.common.MsgEntity;
-import com.app.sociallogin.kakao.service.KakaoService;
 import com.app.sociallogin.naver.service.NaverService;
+import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,14 +19,13 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
+//@Slf4j
 public class HomeController {
-
-    private final KakaoService kakaoService;
+//    private static Logger logger = LoggerFactory.getLogger(HomeController.class);
     private final NaverService naverService;
 
     @RequestMapping(value="/", method= RequestMethod.GET)
     public String login(Model model) {
-        model.addAttribute("kakaoUrl", kakaoService.getKakaoLogin());
         model.addAttribute("naverUrl", naverService.getNaverLogin());
 
         return "index";

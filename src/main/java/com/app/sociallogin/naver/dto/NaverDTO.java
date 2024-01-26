@@ -12,8 +12,11 @@ public class NaverDTO {
     private String email;
     private String name;
     private String access;
+    private String refreshtoken;
     public String getAccess(){ return access;}
     public String getId() {return id; }
+
+    public String getRefreshToken() { return refreshtoken;}
 
     public String getEmail() {
         return email;

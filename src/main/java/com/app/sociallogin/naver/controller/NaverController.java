@@ -2,11 +2,13 @@ package com.app.sociallogin.naver.controller;
 
 
 import com.app.sociallogin.common.MsgEntity;
-import com.app.sociallogin.kakao.dto.KakaoDTO;
 import com.app.sociallogin.naver.dto.NaverDTO;
 import com.app.sociallogin.naver.service.NaverService;
 import com.app.sociallogin.naver.util.CookieUtil;
+import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -34,13 +36,6 @@ public class NaverController {
             session.setAttribute("email", naverInfo.getEmail());
             CookieUtil.addCookie(response,"accesstoken",naverInfo.getAccess(),10);
             CookieUtil.addCookie(response,"refreshtoken",naverInfo.getAccess(),30);
-            if (isFirstTimeUser) {
-                response.sendRedirect("/signup1");
-                System.out.println("처음 사용자");
-            } else {
-                response.sendRedirect("/signup1");
-                System.out.println("등록된 사용자");
-            }
             return ResponseEntity.ok()
                     .body(new MsgEntity("Success", naverInfo));
 
