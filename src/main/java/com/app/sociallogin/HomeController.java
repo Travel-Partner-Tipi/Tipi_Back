@@ -1,16 +1,22 @@
 package com.app.sociallogin;
 
+import com.app.repository.UserRepository;
 import com.app.sociallogin.common.MsgEntity;
+import com.app.sociallogin.naver.dto.NaverDTO;
 import com.app.sociallogin.naver.service.NaverService;
 import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.*;
@@ -22,6 +28,7 @@ import java.util.Map;
 //@Slf4j
 public class HomeController {
 //    private static Logger logger = LoggerFactory.getLogger(HomeController.class);
+    @Autowired
     private final NaverService naverService;
 
     @RequestMapping(value="/", method= RequestMethod.GET)
@@ -30,20 +37,35 @@ public class HomeController {
 
         return "index";
     }
-    @GetMapping("/signup1")
+    @RequestMapping(value = "/signup1" , method = RequestMethod.GET)
     public String additionalInfoForm() {
-        return "/signup1";
+        try{
+
+            return "signup1";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "error";
+        }
     }
 
-    @PostMapping("/signup1")
+    @RequestMapping(value = "/signup1" , method = RequestMethod.POST)
     @ResponseBody
-    public String saveAdditionalInfo(HttpSession session, @RequestParam String info1, @RequestParam String info2, HttpServletResponse response) throws IOException {
+    public ResponseEntity<MsgEntity> saveAdditionalInfo(HttpSession session, @RequestParam String picture,
+                                                        @RequestParam String nickname) throws IOException {
         String email = (String) session.getAttribute("email");
+        try {
+            naverService.saveAdditionalInfo(email, picture, nickname);
 
-        naverService.saveAdditionalInfo(email, info1 , info2);
 
-        response.sendRedirect("/signup2");
-        return "/signup2";
+//            response.sendRedirect("/main");
+            return ResponseEntity.ok()
+                    .body(new MsgEntity("추가 정보 등록 성공", nickname));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                    .body(new MsgEntity("Error", null)); // 실패 시 에러 메시지 반환
+        }
     }
     @GetMapping("/signup2")
     public ResponseEntity<MsgEntity> signup2(HttpSession session) {
@@ -53,7 +75,7 @@ public class HomeController {
                     .body(new MsgEntity("Success", session.getAttribute("email")));
 
         } catch (Exception e) {
-            e.printStackTrace();
+            e   .printStackTrace();
             return ResponseEntity.status(500)
                     .body(new MsgEntity("Error", null)); // 실패 시 에러 메시지 반환
         }
@@ -65,6 +87,33 @@ public class HomeController {
         naverService.saveNicknameInfo(email,nickname,picture);
         return "/profile";
 
+    }
+    @RequestMapping(value = "/token/expired" , method = RequestMethod.GET)
+    public ResponseEntity<MsgEntity> renewtoken(HttpServletRequest request,String refreshtoken) throws Exception {
+        try {
+            String newaccesstoken = naverService.renewAccessToken(request,refreshtoken);
+            return ResponseEntity.ok()
+                    .body(new MsgEntity("토큰 재생성 성공", newaccesstoken));
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                    .body(new MsgEntity("토큰 재생성 오류" , null));
+        }
+    }
+    @RequestMapping(value = "/AuthorizateId", method = RequestMethod.GET)
+    public ResponseEntity<MsgEntity> AuthorizationId(String accesstoken,HttpServletResponse response) throws Exception {
+        boolean isExistUser = naverService.AuthorizationId(accesstoken);
+        if(isExistUser){
+            return ResponseEntity.ok()
+                    .body(new MsgEntity("본인 인증 성공",accesstoken));
+
+        }
+        else {
+            response.sendRedirect("/token/expired");
+            return ResponseEntity.status(500)
+                    .body(new MsgEntity("토큰 만료 & 재 생성","accesstoken expired"));
+        }
     }
 
 }

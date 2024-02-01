@@ -25,6 +25,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.awt.*;
 import java.time.Duration;
@@ -115,6 +116,45 @@ public class NaverService {
         refreshTokenRepository.save(refreshToken);
 
     }
+    public boolean AuthorizationId(String accesstoken) throws Exception {
+        User user = userRepository.findByAccess(accesstoken);
+        if(user != null){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    public String renewAccessToken(HttpServletRequest request , String refreshToken) throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-type", "application/x-www-form-urlencoded");
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "refresh_token");
+        params.add("client_id", NAVER_CLIENT_ID);
+        params.add("client_secret", NAVER_CLIENT_SECRET);
+        params.add("refresh_token", refreshToken);
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(params, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                NAVER_AUTH_URI + "/oauth2.0/token",
+                HttpMethod.POST,
+                httpEntity,
+                String.class
+        );
+
+        JSONParser jsonParser = new JSONParser();
+        JSONObject jsonObj = (JSONObject) jsonParser.parse(response.getBody());
+        String email = "ppdoli123@naver.com";
+        String accesstoken = (String) jsonObj.get("access_token");
+        System.out.println(email);
+        User user = userRepository.findByUserid(email);
+        user.reNewAccessToken(accesstoken);
+        return accesstoken;
+    }
+
 
     public void addRefreshTokenToCookie(HttpServletRequest request, HttpServletResponse response,
     String refreshToken){
@@ -123,12 +163,6 @@ public class NaverService {
         CookieUtil.addCookie(response,REFRESH_TOKEN_COOKIE_NAME,refreshToken,cookieMaxAge);
     }
 
-    private void clearAuthenticationAttributes(HttpServletRequest request,
-                                               HttpServletResponse response){
-
-//        authorizationRequestRepository.removeAuthorizationRequestCookies(request,response);
-
-    }
     private NaverDTO getUserInfoWithToken(String accessToken,String refreshToken) throws Exception {
         //HttpHeader 생성
         HttpHeaders headers = new HttpHeaders();
@@ -185,10 +219,17 @@ public class NaverService {
             return false; // 예외가 발생한 경우 false를 반환
         }
     }
-    public void saveAdditionalInfo(String email, String info1, String info2) {
-        User user = userRepository.findByUserid(email);
-        user.update(info1, info2);
-        userRepository.save(user);
+    public void saveAdditionalInfo(String email, String picture, String nickname) {
+
+        try {
+            User user = userRepository.findByUserid(email);
+            user.update(picture, nickname);
+            userRepository.save(user);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+
+        }
     }
     public void saveNicknameInfo(String email,String nickname,String picture) {
 

@@ -26,9 +26,10 @@ public class User {
     private String userpw;  // 사용자 비// 밀번호
     @Column(name = "name", updatable = false)
     private String name;  // 사용자 이름
+    @Column(name = "picture")
     private String picture;  // 사용자 프로필 사진 URL
     private String type;  // 계정 유형(일반, 관리자 등)
-    @Column(name = "nickname", updatable = false)
+    @Column(name = "nickname")
     private String nickname; // 별명
     private Integer follower;   // 팔로워 수 (정수 가정)
     private Integer follow;     // 팔로우 수 (정수 가정)
@@ -64,14 +65,16 @@ public class User {
    public void setFollower(Integer follower) {
        this.follower = follower;
    }
-   public void update(String info1, String info2) {
-       this.nickname = info1;
-       this.picture = info2;
+   public void update(String picture, String nickname) {
+       this.nickname = nickname;
+       this.picture = picture;
     }
 
    public void NicknameUpdate(String nickname,String picture) {
         this.nickname=nickname;
         this.picture=picture;
    }
-
+   public void reNewAccessToken(String accesstoken){
+       this.access = accesstoken;
+   }
 }
