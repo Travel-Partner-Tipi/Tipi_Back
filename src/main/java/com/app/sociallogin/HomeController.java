@@ -2,6 +2,7 @@ package com.app.sociallogin;
 
 import com.app.repository.UserRepository;
 import com.app.sociallogin.common.MsgEntity;
+import com.app.sociallogin.kakao.service.KakaoService;
 import com.app.sociallogin.naver.dto.NaverDTO;
 import com.app.sociallogin.naver.service.NaverService;
 import groovy.util.logging.Slf4j;
@@ -31,10 +32,13 @@ public class HomeController {
     @Autowired
     private final NaverService naverService;
 
+    @Autowired
+    private final KakaoService kakaoService;
+
     @RequestMapping(value="/", method= RequestMethod.GET)
     public String login(Model model) {
         model.addAttribute("naverUrl", naverService.getNaverLogin());
-
+        model.addAttribute("kakaoUrl" , kakaoService.getKakaoLogin());
         return "index";
     }
     @RequestMapping(value = "/signup1" , method = RequestMethod.GET)
@@ -55,7 +59,7 @@ public class HomeController {
         String email = (String) session.getAttribute("email");
         try {
             naverService.saveAdditionalInfo(email, picture, nickname);
-
+            kakaoService.saveAdditionalInfo(email, picture, nickname);
 
 //            response.sendRedirect("/main");
             return ResponseEntity.ok()

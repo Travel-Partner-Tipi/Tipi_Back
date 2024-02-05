@@ -48,6 +48,7 @@ public class NaverController {
             if (isFirstTimeUser) {
                 response.sendRedirect("/signup1");
                 System.out.println("처음 사용자");
+
             } else {
                 response.sendRedirect("/signup1");
                 System.out.println("등록된 사용자");
