@@ -22,13 +22,11 @@ import javax.servlet.http.HttpServletRequest;
 
 @Service
 public class KakaoService {
+    @Autowired
     private final UserRepository userRepository;
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
-    public KakaoService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
     @Value("${kakao.client.id}")
     private String KAKAO_CLIENT_ID;
 
@@ -40,6 +38,10 @@ public class KakaoService {
 
     private final static String KAKAO_AUTH_URI = "https://kauth.kakao.com";
     private final static String KAKAO_API_URI = "https://kapi.kakao.com";
+
+    public KakaoService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public String getKakaoLogin() {
         return KAKAO_AUTH_URI + "/oauth/authorize"
