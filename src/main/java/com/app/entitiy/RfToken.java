@@ -26,6 +26,9 @@ public class RfToken {
         this.refreshToken = refreshToken;
     }
 
+    public void setUserId(String UserId) {
+        this.userId = UserId;
+    }
 
     public RfToken update(String newRefreshToken) {
         this.refreshToken = newRefreshToken;

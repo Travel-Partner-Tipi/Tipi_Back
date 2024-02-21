@@ -54,21 +54,20 @@ public class HomeController {
 
     @RequestMapping(value = "/signup1" , method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<MsgEntity> saveAdditionalInfo(HttpSession session, @RequestParam String picture,
-                                                        @RequestParam String nickname) throws IOException {
+    public void saveAdditionalInfo(HttpSession session, @RequestParam String picture,
+                                                        @RequestParam String nickname,HttpServletResponse response) throws IOException {
         String email = (String) session.getAttribute("email");
         try {
             naverService.saveAdditionalInfo(email, picture, nickname);
             kakaoService.saveAdditionalInfo(email, picture, nickname);
 
-//            response.sendRedirect("/main");
-            return ResponseEntity.ok()
-                    .body(new MsgEntity("추가 정보 등록 성공", nickname));
+
+            response.sendRedirect("/main");
 
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500)
-                    .body(new MsgEntity("Error", null)); // 실패 시 에러 메시지 반환
+            response.sendRedirect("/");
+
         }
     }
     @GetMapping("/signup2")
@@ -92,6 +91,7 @@ public class HomeController {
         return "/profile";
 
     }
+
     @RequestMapping(value = "/token/expired" , method = RequestMethod.GET)
     public ResponseEntity<MsgEntity> renewtoken(HttpServletRequest request,String refreshtoken) throws Exception {
         try {
