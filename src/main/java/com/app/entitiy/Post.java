@@ -24,7 +24,7 @@ public class Post {
     @Column(name = "author" , updatable = false)
     private String author;
 
-    @Column(name = "title" , updatable = false)
+    @Column(name = "title")
     private String title;
 
     @Column(name = "content")
@@ -34,21 +34,32 @@ public class Post {
     @Column(name = "created_at")
     private LocalDateTime created_at;
 
+    public String getAuthor() {
+        return author;
+    }
+
+    public LocalDateTime getUpdated_at() {
+        return updated_at;
+    }
+
     @LastModifiedDate
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private LocalDateTime updated_at;
 
     @Builder
-    public Post(String author, String title, String content, LocalDateTime created_at) {
+    public Post(String author, String title, String content, LocalDateTime created_at, LocalDateTime updated_at) {
         this.author = author;
         this.title = title;
         this.content = content;
         this.created_at = created_at;
+        this.updated_at = updated_at;
     }
 
-    public void update(String title, String content) {
+    public Post update(String title, String content, LocalDateTime updated_at) {
         this.title = title;
         this.content = content;
+        this.updated_at = updated_at;
+        return this;
     }
 //    public Post update(TimeStamp created_at){
 //        this.created_at = created_at;

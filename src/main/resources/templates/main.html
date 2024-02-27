@@ -8,16 +8,16 @@
     <h1>게시물 공개 페이지</h1>
 
     <div class="buttons">
-        <a href="post/upload" class="button">게시물 작성</a>
+        <a href="upload" class="button">게시물 작성</a>
         <a href="profile.html" class="button">프로필</a>
         <a href="logout.html" class="button">로그아웃</a>
     </div>
 
 </header>
 <main>
-    <div class="post">
-        <h2>게시물 제목</h2>
-        <p>게시물 내용</p>
+    <div class="post" th:each="post : ${postList}">
+        <h2><a th:href="${'/post/detail?id=' + post.id}" th:text="${post.title}"></a></h2>
+        <p th:text="${post.content}"></p>
     </div>
 </main>
 </body>

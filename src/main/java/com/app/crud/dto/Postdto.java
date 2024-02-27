@@ -16,6 +16,12 @@ public class Postdto {
     private String title;
     private String content;
     private LocalDateTime created_at;
+    private LocalDateTime updated_at;
+
+    public LocalDateTime getUpdated_at() {
+        return updated_at;
+    }
+
     private String author;
 
 
@@ -44,6 +50,7 @@ public class Postdto {
         this.title = post.getTitle();
         this.content = post.getContent();
         this.created_at = post.getCreated_at();
+        this.updated_at = post.getUpdated_at();
         this.author = post.getAuthor();
     }
 }

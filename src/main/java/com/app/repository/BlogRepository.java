@@ -6,4 +6,6 @@ import java.util.Optional;
 
 public interface BlogRepository extends JpaRepository<Post, Long> {
     Optional<Post> findById(String userId);
+
+    Optional<Post> findByAuthor(String author);
 }

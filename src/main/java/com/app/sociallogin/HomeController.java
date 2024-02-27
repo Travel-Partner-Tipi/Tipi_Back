@@ -62,7 +62,7 @@ public class HomeController {
             kakaoService.saveAdditionalInfo(email, picture, nickname);
 
 
-            response.sendRedirect("/main");
+            response.sendRedirect("post/main");
 
         } catch (Exception e) {
             e.printStackTrace();
